@@ -79,4 +79,5 @@ void	step_grid(t_game *game)
 	grid->cells = grid->next;
 	grid->next = tmp;
 	game->pop_total += game->pop_births - game->pop_deaths;
+	game->generation++;
 }

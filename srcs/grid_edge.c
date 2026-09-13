@@ -41,3 +41,16 @@ int	edge_wrap_get(t_grid *grid, int x, int y)
 	apply_flip(grid, &cx, &cy, x_out, y_out);
 	return (grid->cells[cy * grid->width + cx]);
 }
+
+char	*edge_label(t_edge edge)
+{
+	if (edge == EDGE_FINITE)
+		return ("finite");
+	if (edge == EDGE_TORUS)
+		return ("torus");
+	if (edge == EDGE_MOBIUS)
+		return ("mobius");
+	if (edge == EDGE_KLEIN)
+		return ("klein");
+	return ("projective");
+}

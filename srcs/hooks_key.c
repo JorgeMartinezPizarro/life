@@ -26,6 +26,7 @@ int	key_hook(int keycode, t_game *game)
 		game->pop_total = grid_count_alive(&game->grid);
 		game->pop_births = 0;
 		game->pop_deaths = 0;
+		game->generation = 0;
 	}
 	return (0);
 }

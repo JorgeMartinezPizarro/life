@@ -26,23 +26,37 @@ static char	*num_field(char *label, int value)
 	return (out);
 }
 
+static char	*str_field(char *label, char *value)
+{
+	char	*labeled;
+	char	*out;
+
+	labeled = ft_strjoin(label, value);
+	out = ft_strjoin(labeled, "  ");
+	free(labeled);
+	return (out);
+}
+
+static char	*append(char *acc, char *piece)
+{
+	char	*out;
+
+	out = ft_strjoin(acc, piece);
+	free(acc);
+	free(piece);
+	return (out);
+}
+
 static char	*build_status(t_game *game)
 {
-	char	*total;
-	char	*births;
-	char	*deaths;
 	char	*line;
 
-	total = num_field("total: ", game->pop_total);
-	births = num_field("births: ", game->pop_births);
-	deaths = num_field("deaths: ", game->pop_deaths);
-	line = ft_strjoin(total, births);
-	free(total);
-	free(births);
-	total = line;
-	line = ft_strjoin(total, deaths);
-	free(total);
-	free(deaths);
+	line = ft_strdup("");
+	line = append(line, num_field("gen: ", game->generation));
+	line = append(line, num_field("total: ", game->pop_total));
+	line = append(line, num_field("births: ", game->pop_births));
+	line = append(line, num_field("deaths: ", game->pop_deaths));
+	line = append(line, str_field("geometry: ", edge_label(game->grid.edge)));
 	return (line);
 }
 

@@ -86,6 +86,7 @@ typedef struct s_game
 	int		pop_total;
 	int		pop_births;
 	int		pop_deaths;
+	int		generation;
 }	t_game;
 
 /* main.c */
@@ -127,6 +128,7 @@ int		grid_count_alive(t_grid *grid);
 
 /* grid_edge.c */
 int		edge_wrap_get(t_grid *grid, int x, int y);
+char	*edge_label(t_edge edge);
 
 /* rules_step.c */
 int		count_neighbors(t_grid *grid, int x, int y);
