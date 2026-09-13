@@ -2,7 +2,7 @@ NAME		= life
 
 CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
-IFLAGS		= -Iincludes -Ilibft -Iminilibx
+IFLAGS		= -Iincludes -Ilibft/includes -Iminilibx
 
 INC_DIR		= includes
 SRC_DIR		= srcs

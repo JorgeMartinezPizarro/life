@@ -33,9 +33,11 @@ You need either a config file (which supplies the initial grid) or
 `--random=WxH:PERCENT` to build one on the fly. Try:
 
 ```
-./life configs/default.cfg           # Gosper glider gun, 960x720 window
-./life configs/glider.cfg
-./life configs/blinker.cfg
+./life configs/default.cfg           # two Gosper glider guns, firing forever, never crossing paths
+./life configs/glider.cfg            # 5 gliders on parallel diagonal tracks, never collide
+./life configs/blinker.cfg           # 84 blinkers tiled across the board, in sync
+./life configs/pulsar.cfg            # 6 pulsars (period-3 oscillator), tiled
+./life configs/spaceship.cfg         # 4 lightweight spaceships cruising on parallel rows
 ./life configs/fullscreen.cfg        # 1900x1000 random soup, cell_size=1, Conway
 ./life configs/fullscreen_conway.cfg    # 1900x1000 px, cell_size=2, B3/S23     - dies down fastest
 ./life configs/fullscreen_highlife.cfg  # 1900x1000 px, cell_size=2, B36/S23    - freezes even faster than Conway
@@ -43,6 +45,15 @@ You need either a config file (which supplies the initial grid) or
 ./life configs/random.cfg            # random grid generated from the config file itself
 ./life --random=100x70:25 --rule=B36/S23 --cell=10
 ```
+
+`default.cfg`, `glider.cfg`, `blinker.cfg`, `pulsar.cfg` and `spaceship.cfg`
+are all known, well-understood Life patterns (glider gun, spaceship, still
+oscillators) placed so their copies can never interact with each other or
+with themselves (parallel tracks with identical velocity, or spacing wide
+enough that neighbourhoods never touch) — each one was run for hundreds to
+thousands of generations against the real engine to confirm the total
+population never decays or grows, i.e. it really does sustain itself
+forever, not just for a while.
 
 The three `fullscreen_*` configs are the same random seed and grid at three
 different rules, meant to be compared side by side: no finite grid can stay
@@ -110,12 +121,16 @@ All keys are optional; anything not set falls back to a sane default
 ## Project layout
 
 ```
-Makefile            life's own sources + link step (-lft -lmlx)
-includes/life.h      shared types and prototypes
-srcs/                life's own .c files (parsing, grid, rendering, hooks)
-libft/               personal libft + ft_printf + get_next_line, own Makefile -> libft.a
-minilibx/             vendored minilibX (own Makefile -> libmlx.a)
-configs/              example config files
+Makefile              life's own sources + link step (-lft -lmlx)
+includes/life.h        shared types and prototypes
+srcs/                  life's own .c files (parsing, grid, rendering, hooks)
+libft/                 own Makefile -> libft.a
+  includes/libft.h       public libft API
+  srcs/                  one file per libft function (mirrors the layout above)
+  ft_printf/             ft_printf's own internals (only ft_printf() itself stays in srcs/)
+  gnl/                   get_next_line's own internals (only get_next_line() stays in srcs/)
+minilibx/               vendored minilibX (own Makefile -> libmlx.a)
+configs/                example config files
 ```
 
 ## Shortcuts
