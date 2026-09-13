@@ -41,22 +41,36 @@ static int	next_state(t_rule *rule, int alive, int neighbors)
 	return (rule->born[neighbors]);
 }
 
+static void	track_transition(t_game *game, int alive, int next)
+{
+	if (next && !alive)
+		game->pop_births++;
+	else if (!next && alive)
+		game->pop_deaths++;
+}
+
 void	step_grid(t_game *game)
 {
 	t_grid	*grid;
 	char	*tmp;
 	int		x;
 	int		y;
+	int		alive;
+	int		next;
 
 	grid = &game->grid;
+	game->pop_births = 0;
+	game->pop_deaths = 0;
 	y = 0;
 	while (y < grid->height)
 	{
 		x = 0;
 		while (x < grid->width)
 		{
-			grid->next[y * grid->width + x] = next_state(&game->rule,
-					grid_get(grid, x, y), count_neighbors(grid, x, y));
+			alive = grid_get(grid, x, y);
+			next = next_state(&game->rule, alive, count_neighbors(grid, x, y));
+			track_transition(game, alive, next);
+			grid->next[y * grid->width + x] = next;
 			x++;
 		}
 		y++;
@@ -64,4 +78,5 @@ void	step_grid(t_game *game)
 	tmp = grid->cells;
 	grid->cells = grid->next;
 	grid->next = tmp;
+	game->pop_total += game->pop_births - game->pop_deaths;
 }

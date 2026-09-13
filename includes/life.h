@@ -26,6 +26,9 @@
 
 # define COLOR_ALIVE		0x00FF7F
 # define COLOR_DEAD			0x101018
+# define COLOR_STATUS		0xFFFFFF
+
+# define STATUS_HEIGHT		20
 
 # define KEY_ESC			65307
 # define KEY_SPACE			32
@@ -80,6 +83,9 @@ typedef struct s_game
 	int		speed_ms;
 	int		paused;
 	long	last_step_us;
+	int		pop_total;
+	int		pop_births;
+	int		pop_deaths;
 }	t_game;
 
 /* main.c */
@@ -117,6 +123,7 @@ int		grid_get(t_grid *grid, int x, int y);
 void	grid_set(t_grid *grid, int x, int y, int state);
 void	grid_save_initial(t_grid *grid);
 void	grid_reset(t_grid *grid);
+int		grid_count_alive(t_grid *grid);
 
 /* grid_edge.c */
 int		edge_wrap_get(t_grid *grid, int x, int y);
@@ -131,6 +138,9 @@ void	init_mlx(t_game *game);
 /* render.c */
 void	put_pixel_img(t_mlx *mlx, int x, int y, int color);
 void	render_grid(t_game *game);
+
+/* render_status.c */
+void	render_status(t_game *game);
 
 /* hooks_key.c */
 int		key_hook(int keycode, t_game *game);

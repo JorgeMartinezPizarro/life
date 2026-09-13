@@ -40,6 +40,7 @@ int	main(int argc, char **argv)
 	if (!game.grid.cells)
 		error_exit("no initial grid: provide a config file or --random");
 	grid_save_initial(&game.grid);
+	game.pop_total = grid_count_alive(&game.grid);
 	init_mlx(&game);
 	setup_hooks(&game);
 	mlx_loop(game.mlx.mlx);

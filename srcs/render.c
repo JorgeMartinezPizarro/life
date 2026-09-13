@@ -61,5 +61,7 @@ void	render_grid(t_game *game)
 		}
 		y++;
 	}
+	mlx_clear_window(game->mlx.mlx, game->mlx.win);
 	mlx_put_image_to_window(game->mlx.mlx, game->mlx.win, game->mlx.img, 0, 0);
+	render_status(game);
 }

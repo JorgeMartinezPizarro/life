@@ -21,6 +21,11 @@ int	key_hook(int keycode, t_game *game)
 	else if (keycode == KEY_N && game->paused)
 		step_grid(game);
 	else if (keycode == KEY_R)
+	{
 		grid_reset(&game->grid);
+		game->pop_total = grid_count_alive(&game->grid);
+		game->pop_births = 0;
+		game->pop_deaths = 0;
+	}
 	return (0);
 }

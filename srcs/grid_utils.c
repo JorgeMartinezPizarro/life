@@ -53,3 +53,19 @@ void	grid_reset(t_grid *grid)
 		i++;
 	}
 }
+
+int	grid_count_alive(t_grid *grid)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (i < grid->width * grid->height)
+	{
+		if (grid->cells[i])
+			count++;
+		i++;
+	}
+	return (count);
+}
