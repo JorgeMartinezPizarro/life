@@ -14,14 +14,13 @@
 
 int	grid_get(t_grid *grid, int x, int y)
 {
-	if (grid->wrap)
+	if (grid->edge == EDGE_FINITE)
 	{
-		x = ((x % grid->width) + grid->width) % grid->width;
-		y = ((y % grid->height) + grid->height) % grid->height;
+		if (x < 0 || x >= grid->width || y < 0 || y >= grid->height)
+			return (0);
+		return (grid->cells[y * grid->width + x]);
 	}
-	else if (x < 0 || x >= grid->width || y < 0 || y >= grid->height)
-		return (0);
-	return (grid->cells[y * grid->width + x]);
+	return (edge_wrap_get(grid, x, y));
 }
 
 void	grid_set(t_grid *grid, int x, int y, int state)

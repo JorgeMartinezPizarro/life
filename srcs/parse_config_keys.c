@@ -24,12 +24,18 @@ static char	*value_after_eq(char *line)
 
 void	apply_edge(t_game *game, char *value)
 {
-	if (!ft_strcmp(value, "wrap"))
-		game->grid.wrap = 1;
-	else if (!ft_strcmp(value, "finite"))
-		game->grid.wrap = 0;
+	if (!ft_strcmp(value, "finite"))
+		game->grid.edge = EDGE_FINITE;
+	else if (!ft_strcmp(value, "torus") || !ft_strcmp(value, "wrap"))
+		game->grid.edge = EDGE_TORUS;
+	else if (!ft_strcmp(value, "mobius"))
+		game->grid.edge = EDGE_MOBIUS;
+	else if (!ft_strcmp(value, "klein"))
+		game->grid.edge = EDGE_KLEIN;
+	else if (!ft_strcmp(value, "projective"))
+		game->grid.edge = EDGE_PROJECTIVE;
 	else
-		error_exit("invalid edge value, expected wrap or finite");
+		error_exit("invalid edge value: finite|torus|mobius|klein|projective");
 }
 
 void	apply_config_key(t_game *game, char *line)

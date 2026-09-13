@@ -1,16 +1,12 @@
 # life
 
-Conway's Game of Life, written in C following the 42 Norm, rendered with
-[minilibX](minilibx/). Initial conditions and the cellular-automaton rule
-are fully configurable, either through a config file or CLI flags.
+Conway's Game of Life, written in C following the 42 Norm, rendered with [minilibX](minilibx/). Initial conditions and the cellular-automaton rule are fully configurable, either through a config file or CLI flags.
 
 ![Demo de life](assets/life.gif)
 
 ## Build
 
-This project links against X11/Xext through minilibX, so it needs a Linux
-environment with an X server. On Windows, build and run it from **WSL**
-(WSLg provides the display out of the box):
+This project links against X11/Xext through minilibX, so it needs a Linux environment with an X server. On Windows, build and run it from **WSL** (WSLg provides the display out of the box):
 
 ```
 sudo apt-get install gcc make xorg libxext-dev libbsd-dev   # once, if missing
@@ -38,28 +34,7 @@ You need either a config file (which supplies the initial grid) or
 ./life configs/blinker.cfg           # 84 blinkers tiled across the board, in sync
 ./life configs/pulsar.cfg            # 6 pulsars (period-3 oscillator), tiled
 ./life configs/spaceship.cfg         # 4 lightweight spaceships cruising on parallel rows
-./life configs/fullscreen.cfg        # 1900x1000 random soup, cell_size=1, Conway
-./life configs/fullscreen_conway.cfg    # 1900x1000 px, cell_size=2, B3/S23     - dies down fastest
-./life configs/fullscreen_highlife.cfg  # 1900x1000 px, cell_size=2, B36/S23    - freezes even faster than Conway
-./life configs/fullscreen_daynight.cfg  # 1900x1000 px, cell_size=2, B3678/S34678 - stays churning the longest
-./life configs/random.cfg            # random grid generated from the config file itself
-./life --random=100x70:25 --rule=B36/S23 --cell=10
 ```
-
-`default.cfg`, `glider.cfg`, `blinker.cfg`, `pulsar.cfg` and `spaceship.cfg`
-are all known, well-understood Life patterns (glider gun, spaceship, still
-oscillators) placed so their copies can never interact with each other or
-with themselves (parallel tracks with identical velocity, or spacing wide
-enough that neighbourhoods never touch) — each one was run for hundreds to
-thousands of generations against the real engine to confirm the total
-population never decays or grows, i.e. it really does sustain itself
-forever, not just for a while.
-
-The three `fullscreen_*` configs are the same random seed and grid at three
-different rules, meant to be compared side by side: no finite grid can stay
-chaotic forever (see below), but some rules take far longer than others to
-settle into "ash". `daynight` sustains visible activity by far the longest
-of the three.
 
 ### Controls
 
@@ -79,10 +54,19 @@ of the three.
 | `--random=WxH:PCT` | build a `W`x`H` grid, each cell alive with `PCT`% probability (0-100); needed if no config file is given |
 | `--speed=ms` | milliseconds between generations |
 | `--cell=px` | pixel size of one cell |
-| `--edge=wrap\|finite` | `wrap`: toroidal grid (default); `finite`: cells outside the grid count as dead |
+| `--edge=MODE` | grid topology (default `torus`) — see below |
 
-Flags override whatever the config file set. `--random` and a config file
-are mutually exclusive as the grid source (the first one seen wins).
+`MODE` is one of:
+
+| Mode | Geometry |
+|------|----------|
+| `finite` | cells outside the grid count as dead |
+| `torus` | opposite edges wrap around normally (donut); accepts `wrap` as a deprecated alias |
+| `mobius` | left/right edges wrap with the row flipped top-to-bottom (Möbius strip); top/bottom edges stay finite |
+| `klein` | left/right edges wrap with a flip like `mobius`, but top/bottom also wrap normally (Klein bottle) |
+| `projective` | both pairs of edges wrap, each flipping the other axis (real projective plane) |
+
+Flags override whatever the config file set. `--random` and a config file are mutually exclusive as the grid source (the first one seen wins).
 
 ## Config file format
 
@@ -91,7 +75,7 @@ are mutually exclusive as the grid source (the first one seen wins).
 rule=B3/S23
 cell_size=12
 speed_ms=80
-edge=wrap
+edge=torus
 PATTERN
 ....................
 ....................
@@ -103,7 +87,7 @@ PATTERN
 - `rule=` — life-like rule string, `B<digits>/S<digits>`.
 - `cell_size=` — pixel size of one cell in the window.
 - `speed_ms=` — milliseconds between generations.
-- `edge=` — `wrap` or `finite` (see above).
+- `edge=` — `finite`, `torus`, `mobius`, `klein` or `projective` (see above).
 - `PATTERN` — marks the start of the grid. Everything after it, to the end
   of the file, is the initial pattern: one line per row. `o`, `O`, `*` or
   `1` mean an alive cell; anything else (typically `.`) means dead. The
@@ -115,7 +99,7 @@ PATTERN
   `random=` **or** `PATTERN`, never both — see `configs/random.cfg`.
 
 All keys are optional; anything not set falls back to a sane default
-(`B3/S23`, `cell_size=10`, `speed_ms=150`, `edge=wrap`) or to a
+(`B3/S23`, `cell_size=10`, `speed_ms=150`, `edge=torus`) or to a
 `--flag` given on the command line.
 
 ## Project layout
@@ -133,7 +117,7 @@ minilibx/               vendored minilibX (own Makefile -> libmlx.a)
 configs/                example config files
 ```
 
-## Shortcuts
+## Creating gifs
 
 In windows, you can capture with `Win + G` and then use the `mp4` as follows to create a gif:
 

@@ -17,7 +17,7 @@ static void	init_defaults(t_game *game)
 	ft_memset(game, 0, sizeof(t_game));
 	game->cell_size = DEFAULT_CELL_SIZE;
 	game->speed_ms = DEFAULT_SPEED_MS;
-	game->grid.wrap = DEFAULT_WRAP;
+	game->grid.edge = DEFAULT_EDGE;
 	parse_rule(&game->rule, "B3/S23");
 }
 

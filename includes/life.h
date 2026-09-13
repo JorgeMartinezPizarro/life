@@ -20,9 +20,9 @@
 # include <sys/time.h>
 
 # define WIN_TITLE			"life"
-# define DEFAULT_CELL_SIZE	10
+# define DEFAULT_CELL_SIZE	12
 # define DEFAULT_SPEED_MS	150
-# define DEFAULT_WRAP		1
+# define DEFAULT_EDGE		EDGE_TORUS
 
 # define COLOR_ALIVE		0x00FF7F
 # define COLOR_DEAD			0x101018
@@ -35,6 +35,15 @@
 # define MLX_EVT_DESTROY	17
 # define MLX_MASK_STRUCT	131072
 
+typedef enum e_edge
+{
+	EDGE_FINITE,
+	EDGE_TORUS,
+	EDGE_MOBIUS,
+	EDGE_KLEIN,
+	EDGE_PROJECTIVE
+}	t_edge;
+
 typedef struct s_rule
 {
 	int		born[9];
@@ -45,7 +54,7 @@ typedef struct s_grid
 {
 	int		width;
 	int		height;
-	int		wrap;
+	t_edge	edge;
 	char	*cells;
 	char	*next;
 	char	*initial;
@@ -108,6 +117,9 @@ int		grid_get(t_grid *grid, int x, int y);
 void	grid_set(t_grid *grid, int x, int y, int state);
 void	grid_save_initial(t_grid *grid);
 void	grid_reset(t_grid *grid);
+
+/* grid_edge.c */
+int		edge_wrap_get(t_grid *grid, int x, int y);
 
 /* rules_step.c */
 int		count_neighbors(t_grid *grid, int x, int y);

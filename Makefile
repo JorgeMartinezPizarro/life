@@ -20,6 +20,7 @@ SRCS		= main.c \
 			  parse_random.c \
 			  grid_alloc.c \
 			  grid_utils.c \
+			  grid_edge.c \
 			  rules_step.c \
 			  init_mlx.c \
 			  render.c \
