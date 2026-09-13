@@ -1,0 +1,11 @@
+/life
+/obj/
+/libft/obj/
+/libft/libft.a
+/minilibx/obj/
+/minilibx/libmlx.a
+/minilibx/libmlx_*.a
+/minilibx/Makefile.gen
+/minilibx/test/Makefile.gen
+/minilibx/test/main.o
+/minilibx/test/mlx-test

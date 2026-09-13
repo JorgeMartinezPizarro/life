@@ -1,0 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_args.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jomarti3 <jomarti3@student.42madrid.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/13 15:34:36 by jomarti3          #+#    #+#             */
+/*   Updated: 2026/09/13 15:34:36 by jomarti3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "life.h"
+
+static int	is_flag(char *arg)
+{
+	return (arg[0] == '-' && arg[1] == '-');
+}
+
+static void	apply_flag(t_game *game, char *arg)
+{
+	if (!ft_strncmp(arg, "--rule=", 7))
+		parse_rule(&game->rule, arg + 7);
+	else if (!ft_strncmp(arg, "--random=", 9))
+		parse_random(game, arg + 9);
+	else if (!ft_strncmp(arg, "--speed=", 8))
+		game->speed_ms = ft_atoi(arg + 8);
+	else if (!ft_strncmp(arg, "--cell=", 7))
+		game->cell_size = ft_atoi(arg + 7);
+	else if (!ft_strncmp(arg, "--edge=", 7))
+		apply_edge(game, arg + 7);
+	else
+		usage_exit();
+}
+
+void	parse_args(t_game *game, int argc, char **argv)
+{
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (is_flag(argv[i]))
+			apply_flag(game, argv[i]);
+		else if (!game->grid.cells)
+			parse_config(game, argv[i]);
+		else
+			usage_exit();
+		i++;
+	}
+}
