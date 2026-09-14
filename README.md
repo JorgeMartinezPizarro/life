@@ -2,7 +2,7 @@
 
 Conway's Game of Life, written in C following the 42 Norm, rendered with [minilibX](minilibx/). Initial conditions and the cellular-automaton rule are fully configurable, either through a config file or CLI flags.
 
-<img src="./assets/life2.gif" width="100%">
+<img src="./assets/life.gif" width="100%">
 
 ## Build
 
