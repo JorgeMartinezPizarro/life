@@ -45,7 +45,7 @@ static void	fill_row(t_grid *grid, int row, char *line)
 	int	x;
 
 	x = 0;
-	while (x < grid->width && line[x] != '\0')
+	while (x < grid->width && line[x] != '\0')	// fill the row with the pattern
 	{
 		if (line[x] == 'o')
 			grid_set(grid, x, row, 1);
