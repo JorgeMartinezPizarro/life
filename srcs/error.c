@@ -19,6 +19,13 @@ void	error_exit(char *msg)
 	exit(1);
 }
 
+int	safe_len(size_t n)
+{
+	if (n > MAX_STR_LEN)
+		error_exit("value too large: exceeds MAX_STR_LEN");
+	return ((int)n);
+}
+
 void	usage_exit(void)
 {
 	ft_putendl_fd("usage: ./life <config_file> [options]", 2);

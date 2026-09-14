@@ -21,7 +21,7 @@ static char	*derive_title(char *path)
 {
 	char	*base;
 	char	*dot;
-	int		len;
+	size_t	len;
 
 	base = ft_strrchr(path, '/');
 	if (base)
@@ -30,10 +30,10 @@ static char	*derive_title(char *path)
 		base = path;
 	dot = ft_strrchr(base, '.');
 	if (dot && dot != base)
-		len = dot - base;
+		len = (size_t)(dot - base);
 	else
 		len = ft_strlen(base);
-	return (ft_substr(base, 0, (size_t)len));
+	return (ft_substr(base, 0, len));
 }
 
 static void	apply_flag(t_game *game, char *arg)

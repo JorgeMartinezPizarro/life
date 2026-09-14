@@ -14,8 +14,8 @@
 
 static void	strip_cr_all(char **lines)
 {
-	int	i;
-	int	len;
+	int		i;
+	size_t	len;
 
 	i = 0;
 	while (lines[i])

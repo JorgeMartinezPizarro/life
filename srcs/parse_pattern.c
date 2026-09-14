@@ -14,19 +14,19 @@
 
 static int	pattern_height(char **lines, int start)
 {
-	int	h;
+	size_t	h;
 
 	h = 0;
 	while (lines[start + h] && lines[start + h][0] != '\0')
 		h++;
-	return (h);
+	return (safe_len(h));
 }
 
 static int	pattern_width(char **lines, int start, int height)
 {
-	int	w;
-	int	len;
-	int	i;
+	size_t	w;
+	size_t	len;
+	int		i;
 
 	w = 0;
 	i = 0;
@@ -37,21 +37,17 @@ static int	pattern_width(char **lines, int start, int height)
 			w = len;
 		i++;
 	}
-	return (w);
+	return (safe_len(w));
 }
 
 static void	fill_row(t_grid *grid, int row, char *line)
 {
 	int	x;
-	int	c;
 
 	x = 0;
 	while (x < grid->width)
 	{
-		c = 0;
-		if (line[x])
-			c = line[x];
-		if (c == 'o' || c == 'O' || c == '*' || c == '1')
+		if (line[x] == 'o')
 			grid_set(grid, x, row, 1);
 		x++;
 	}

@@ -8,7 +8,7 @@ Conway's Game of Life, written in C following the 42 Norm, rendered with [minili
 
 This project links against X11/Xext through minilibX, so it needs a Linux environment with an X server. On Windows, build and run it from **WSL** (WSLg provides the display out of the box):
 
-```
+```sh
 sudo apt-get install gcc make xorg libxext-dev libbsd-dev   # once, if missing
 make
 ```
@@ -25,15 +25,23 @@ make
 ./life --random=WxH:PERCENT [options]
 ```
 
-You need either a config file (which supplies the initial grid) or
-`--random=WxH:PERCENT` to build one on the fly. Try:
+You need either a config file (which supplies the initial grid),
 
-```
-./life configs/default.cfg           # two Gosper glider guns, firing forever, never crossing paths
+```sh
+./life configs/railgun.cfg           # two Gosper glider guns, firing forever, never crossing paths
 ./life configs/glider.cfg            # 5 gliders on parallel diagonal tracks, never collide
 ./life configs/blinker.cfg           # 84 blinkers tiled across the board, in sync
 ./life configs/pulsar.cfg            # 6 pulsars (period-3 oscillator), tiled
 ./life configs/spaceship.cfg         # 4 lightweight spaceships cruising on parallel rows
+```
+
+or use `life` to build one on the fly. For example:
+
+ ```sh
+ ./life --random=200x200:15
+ ./life --random=200x200:15 --cell=2
+ ./life --random=200x200:15 --cell=2 --speed=8 --edge=torus --rule=B13/S23
+ ./life --random=200x200:15 --cell=2 --speed=25 --edge=torus --rule=B13/S28
 ```
 
 ### Controls
@@ -89,14 +97,13 @@ PATTERN
 - `speed_ms=` — milliseconds between generations.
 - `edge=` — `finite`, `torus`, `mobius`, `klein` or `projective` (see above).
 - `PATTERN` — marks the start of the grid. Everything after it, to the end
-  of the file, is the initial pattern: one line per row. `o`, `O`, `*` or
-  `1` mean an alive cell; anything else (typically `.`) means dead. The
-  grid's width is the longest pattern line; shorter lines are padded with
-  dead cells on the right, so the block doesn't need to be a perfect
-  rectangle.
+  of the file, is the initial pattern: one line per row, `o` for an alive
+  cell and `.` for dead — no other symbols are recognized. The grid's
+  width is the longest pattern line; shorter lines are padded with dead
+  cells on the right, so the block doesn't need to be a perfect rectangle.
 - `random=WxH:PCT` — build a random `W`x`H` grid instead of a `PATTERN`
   block, same format as `--random` on the CLI. A file uses **either**
-  `random=` **or** `PATTERN`, never both — see `configs/random.cfg`.
+  `random=` **or** `PATTERN`, never both — see `configs/conway_random.cfg`.
 
 All keys are optional; anything not set falls back to a sane default
 (`B3/S23`, `cell_size=10`, `speed_ms=150`, `edge=torus`) or to a
@@ -109,12 +116,8 @@ Makefile              life's own sources + link step (-lft -lmlx)
 includes/life.h        shared types and prototypes
 srcs/                  life's own .c files (parsing, grid, rendering, hooks)
 libft/                 own Makefile -> libft.a
-  includes/libft.h       public libft API
-  srcs/                  one file per libft function (mirrors the layout above)
-  ft_printf/             ft_printf's own internals (only ft_printf() itself stays in srcs/)
-  gnl/                   get_next_line's own internals (only get_next_line() stays in srcs/)
-minilibx/               vendored minilibX (own Makefile -> libmlx.a)
-configs/                example config files
+minilibx/              vendored minilibX (own Makefile -> libmlx.a)
+configs/               example config files
 ```
 
 ## Creating gifs

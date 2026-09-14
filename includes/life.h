@@ -24,6 +24,8 @@
 # define DEFAULT_SPEED_MS	150
 # define DEFAULT_EDGE		EDGE_TORUS
 
+# define MAX_STR_LEN		1000000
+
 # define COLOR_ALIVE		0x00FF7F
 # define COLOR_DEAD			0x101018
 # define COLOR_STATUS		0xFFFFFF
@@ -96,6 +98,7 @@ int		main(int argc, char **argv);
 /* error.c */
 void	error_exit(char *msg);
 void	usage_exit(void);
+int		safe_len(size_t n);
 
 /* parse_args.c */
 void	parse_args(t_game *game, int argc, char **argv);
