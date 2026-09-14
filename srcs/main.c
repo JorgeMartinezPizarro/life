@@ -15,6 +15,7 @@
 static void	init_defaults(t_game *game)
 {
 	ft_memset(game, 0, sizeof(t_game));
+	game->title = ft_strdup(DEFAULT_TITLE);
 	game->cell_size = DEFAULT_CELL_SIZE;
 	game->speed_ms = DEFAULT_SPEED_MS;
 	game->grid.edge = DEFAULT_EDGE;

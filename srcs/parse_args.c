@@ -17,6 +17,25 @@ static int	is_flag(char *arg)
 	return (arg[0] == '-' && arg[1] == '-');
 }
 
+static char	*derive_title(char *path)
+{
+	char	*base;
+	char	*dot;
+	int		len;
+
+	base = ft_strrchr(path, '/');
+	if (base)
+		base++;
+	else
+		base = path;
+	dot = ft_strrchr(base, '.');
+	if (dot && dot != base)
+		len = dot - base;
+	else
+		len = ft_strlen(base);
+	return (ft_substr(base, 0, (size_t)len));
+}
+
 static void	apply_flag(t_game *game, char *arg)
 {
 	if (!ft_strncmp(arg, "--rule=", 7))
@@ -43,7 +62,11 @@ void	parse_args(t_game *game, int argc, char **argv)
 		if (is_flag(argv[i]))
 			apply_flag(game, argv[i]);
 		else if (!game->grid.cells)
+		{
+			free(game->title);
+			game->title = derive_title(argv[i]);
 			parse_config(game, argv[i]);
+		}
 		else
 			usage_exit();
 		i++;

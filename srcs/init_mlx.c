@@ -19,7 +19,7 @@ static void	create_window(t_game *game)
 
 	win_w = game->grid.width * game->cell_size;
 	win_h = game->grid.height * game->cell_size + STATUS_HEIGHT;
-	game->mlx.win = mlx_new_window(game->mlx.mlx, win_w, win_h, WIN_TITLE);
+	game->mlx.win = mlx_new_window(game->mlx.mlx, win_w, win_h, game->title);
 	if (!game->mlx.win)
 		error_exit("mlx_new_window failed");
 }

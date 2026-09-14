@@ -19,7 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 
-# define WIN_TITLE			"life"
+# define DEFAULT_TITLE		"random life"
 # define DEFAULT_CELL_SIZE	12
 # define DEFAULT_SPEED_MS	150
 # define DEFAULT_EDGE		EDGE_TORUS
@@ -79,6 +79,7 @@ typedef struct s_game
 	t_grid	grid;
 	t_rule	rule;
 	t_mlx	mlx;
+	char	*title;
 	int		cell_size;
 	int		speed_ms;
 	int		paused;

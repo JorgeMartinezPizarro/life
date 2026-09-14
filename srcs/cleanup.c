@@ -24,5 +24,6 @@ void	cleanup_exit(t_game *game)
 		free(game->mlx.mlx);
 	}
 	grid_free(&game->grid);
+	free(game->title);
 	exit(0);
 }
