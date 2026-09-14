@@ -9,3 +9,5 @@
 /minilibx/test/Makefile.gen
 /minilibx/test/main.o
 /minilibx/test/mlx-test
+bug*/*
+*docs*/*
