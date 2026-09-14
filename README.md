@@ -17,7 +17,7 @@ make
 - `make clean` removes object files (life's own, libft's, minilibx's).
 - `make fclean` also removes the `life` binary and the two `.a` libraries.
 - `make re` = `fclean` + `all`.
-
+- `make debug` to compile with sanitizer, for memory bad usages.
 ## Run
 
 ```

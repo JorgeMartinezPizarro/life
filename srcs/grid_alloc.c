@@ -14,11 +14,17 @@
 
 void	grid_alloc(t_grid *grid, int width, int height)
 {
+	size_t	cells;
+
+	if (width <= 0 || height <= 0
+		|| width > MAX_GRID_WIDTH || height > MAX_GRID_HEIGHT)
+		error_exit("grid dimensions out of allowed range");
 	grid->width = width;
 	grid->height = height;
-	grid->cells = ft_calloc((size_t)(width * height), sizeof(char));
-	grid->next = ft_calloc((size_t)(width * height), sizeof(char));
-	grid->initial = ft_calloc((size_t)(width * height), sizeof(char));
+	cells = (size_t)width * (size_t)height;
+	grid->cells = ft_calloc(cells, sizeof(char));
+	grid->next = ft_calloc(cells, sizeof(char));
+	grid->initial = ft_calloc(cells, sizeof(char));
 	if (!grid->cells || !grid->next || !grid->initial)
 		error_exit("malloc failed while allocating grid");
 }

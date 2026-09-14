@@ -54,6 +54,8 @@ void	parse_random(t_game *game, char *value)
 	ft_free_split(hp);
 	if (width <= 0 || height <= 0 || percent < 0 || percent > 100)
 		error_exit("invalid --random values");
+	if (width > MAX_GRID_WIDTH || height > MAX_GRID_HEIGHT)
+		error_exit("--random dimensions exceed maximum allowed size");
 	grid_alloc(&game->grid, width, height);
 	seed_random();
 	randomize_grid(&game->grid, percent);

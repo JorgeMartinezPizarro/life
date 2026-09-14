@@ -24,20 +24,20 @@ static int	pattern_height(char **lines, int start)
 
 static int	pattern_width(char **lines, int start, int height)
 {
-	size_t	w;
+	size_t	first_len;
 	size_t	len;
 	int		i;
 
-	w = 0;
-	i = 0;
+	first_len = ft_strlen(lines[start]);
+	i = 1;
 	while (i < height)
 	{
 		len = ft_strlen(lines[start + i]);
-		if (len > w)
-			w = len;
+		if (len != first_len)
+			error_exit("pattern is not rectangular: all rows must have the same length");
 		i++;
 	}
-	return (safe_len(w));
+	return (safe_len(first_len));
 }
 
 static void	fill_row(t_grid *grid, int row, char *line)
@@ -60,9 +60,13 @@ void	parse_pattern(t_game *game, char **lines, int start)
 	int	y;
 
 	height = pattern_height(lines, start);
-	width = pattern_width(lines, start, height);
-	if (height == 0 || width == 0)
+	if (height == 0)
 		error_exit("empty pattern in config file");
+	width = pattern_width(lines, start, height);
+	if (width == 0)
+		error_exit("empty pattern in config file");
+	if (width > MAX_GRID_WIDTH || height > MAX_GRID_HEIGHT)
+		error_exit("pattern dimensions exceed maximum allowed size");
 	grid_alloc(&game->grid, width, height);
 	y = 0;
 	while (y < height)

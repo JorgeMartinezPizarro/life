@@ -55,10 +55,14 @@ clean:
 	$(MAKE) -C $(MLX_DIR) clean
 	$(MAKE) -C $(LIBFT_DIR) clean
 
+debug: $(MLX_LIB) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(IFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer \
+		$(addprefix srcs/, $(SRCS)) $(LIBS) -o $(NAME)_debug
+
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(NAME)_debug
 	$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug

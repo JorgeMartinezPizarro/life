@@ -26,6 +26,9 @@
 
 # define MAX_STR_LEN		1000000
 
+# define MAX_GRID_WIDTH		4000
+# define MAX_GRID_HEIGHT	3000
+
 # define COLOR_ALIVE		0x00FF7F
 # define COLOR_DEAD			0x101018
 # define COLOR_STATUS		0xFFFFFF
