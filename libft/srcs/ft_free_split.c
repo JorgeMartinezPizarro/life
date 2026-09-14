@@ -14,7 +14,7 @@
 
 void	ft_free_split(char **arr)
 {
-	int	i;
+	size_t	i;
 
 	if (!arr)
 		return ;

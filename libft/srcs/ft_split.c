@@ -13,10 +13,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-static int	count_words(const char *s, char c)
+static size_t	count_words(const char *s, char c)
 {
-	int	count;
-	int	in_word;
+	size_t	count;
+	int		in_word;
 
 	count = 0;
 	in_word = 0;
@@ -36,10 +36,10 @@ static int	count_words(const char *s, char c)
 	return (count);
 }
 
-static char	*word_dup(const char *s, int start, int end)
+static char	*word_dup(const char *s, size_t start, size_t end)
 {
 	char	*word;
-	int		i;
+	size_t	i;
 
 	word = malloc(end - start + 1);
 	if (!word)
@@ -51,7 +51,7 @@ static char	*word_dup(const char *s, int start, int end)
 	return (word);
 }
 
-static void	free_all(char **res, int i)
+static void	free_all(char **res, size_t i)
 {
 	while (i-- > 0)
 		free(res[i]);
@@ -61,9 +61,9 @@ static void	free_all(char **res, int i)
 char	**ft_split(char const *s, char c)
 {
 	char	**res;
-	int		start;
-	int		end;
-	int		i;
+	size_t	start;
+	size_t	end;
+	size_t	i;
 
 	if (s)
 		res = malloc((count_words(s, c) + 1) * sizeof(char *));

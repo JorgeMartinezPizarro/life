@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <stddef.h>
 
 char	*ft_strdup(const char *src)
 {
-	int		size;
-	int		i;
+	size_t	size;
+	size_t	i;
 	char	*res;
 
 	size = 0;
@@ -24,9 +25,12 @@ char	*ft_strdup(const char *src)
 	res = malloc(size + 1);
 	if (!res)
 		return (NULL);
-	i = -1;
-	while (++i < size)
+	i = 0;
+	while (i < size)
+	{
 		res[i] = src[i];
+		i++;
+	}
 	res[size] = 0;
 	return (res);
 }
