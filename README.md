@@ -35,6 +35,8 @@ You need either a config file (which supplies the initial grid),
 ./life configs/spaceship.cfg         # 4 lightweight spaceships cruising on parallel rows
 ```
 
+<img src=./assets/diamoeba.gif width="100%" />
+
 or use `life` to build one on the fly. For example:
 
  ```sh
