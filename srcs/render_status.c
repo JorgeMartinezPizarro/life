@@ -47,16 +47,48 @@ static char	*append(char *acc, char *piece)
 	return (out);
 }
 
+static char	*rule_label(t_rule *rule)
+{
+	char	buf[24];
+	int		i;
+	int		n;
+
+	n = 0;
+	buf[n++] = 'B';
+	i = 0;
+	while (i < 9)
+	{
+		if (rule->born[i])
+			buf[n++] = '0' + i;
+		i++;
+	}
+	buf[n++] = '/';
+	buf[n++] = 'S';
+	i = 0;
+	while (i < 9)
+	{
+		if (rule->survive[i])
+			buf[n++] = '0' + i;
+		i++;
+	}
+	buf[n] = '\0';
+	return (ft_strdup(buf));
+}
+
 static char	*build_status(t_game *game)
 {
 	char	*line;
+	char	*rule;
 
 	line = ft_strdup("");
+	line = append(line, str_field("geometry: ", edge_label(game->grid.edge)));
+	rule = rule_label(&game->rule);
+	line = append(line, str_field("rule: ", rule));
+	free(rule);
 	line = append(line, num_field("gen: ", game->generation));
 	line = append(line, num_field("total: ", game->pop_total));
 	line = append(line, num_field("births: ", game->pop_births));
 	line = append(line, num_field("deaths: ", game->pop_deaths));
-	line = append(line, str_field("geometry: ", edge_label(game->grid.edge)));
 	return (line);
 }
 
