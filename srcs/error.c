@@ -35,7 +35,8 @@ void	usage_exit(void)
 	ft_putendl_fd("  --random=WxH:PCT    random grid, PCT chance alive", 2);
 	ft_putendl_fd("  --speed=ms          generation interval in ms", 2);
 	ft_putendl_fd("  --cell=px           pixel size of one cell", 2);
-	ft_putendl_fd("  --edge=MODE  finite|torus|mobius|klein|projective", 2);
+	ft_putendl_fd("  --edge=MODE  finite|cylinder|torus|mobius|klein", 2);
+	ft_putendl_fd("               |projective", 2);
 	ft_putendl_fd("keys: ESC quit | SPACE pause | N step | R reset", 2);
 	exit(1);
 }

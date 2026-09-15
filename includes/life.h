@@ -46,6 +46,7 @@
 typedef enum e_edge
 {
 	EDGE_FINITE,
+	EDGE_CYLINDER,
 	EDGE_TORUS,
 	EDGE_MOBIUS,
 	EDGE_KLEIN,

@@ -26,6 +26,8 @@ void	apply_edge(t_game *game, char *value)
 {
 	if (!ft_strcmp(value, "finite"))
 		game->grid.edge = EDGE_FINITE;
+	else if (!ft_strcmp(value, "cylinder"))
+		game->grid.edge = EDGE_CYLINDER;
 	else if (!ft_strcmp(value, "torus") || !ft_strcmp(value, "wrap"))
 		game->grid.edge = EDGE_TORUS;
 	else if (!ft_strcmp(value, "mobius"))
@@ -35,7 +37,8 @@ void	apply_edge(t_game *game, char *value)
 	else if (!ft_strcmp(value, "projective"))
 		game->grid.edge = EDGE_PROJECTIVE;
 	else
-		error_exit("invalid edge value: finite|torus|mobius|klein|projective");
+		error_exit("invalid edge value: finite|cylinder|torus|mobius|klein"
+			"|projective");
 }
 
 void	apply_config_key(t_game *game, char *line)

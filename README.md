@@ -71,8 +71,9 @@ or use `life` to build one on the fly. For example:
 | Mode | Geometry |
 |------|----------|
 | `finite` | cells outside the grid count as dead |
-| `torus` | opposite edges wrap around normally (donut); accepts `wrap` as a deprecated alias |
-| `mobius` | left/right edges wrap with the row flipped top-to-bottom (Möbius strip); top/bottom edges stay finite |
+| `cylinder` | left/right edges wrap around normally, joining left to right (like a paper tube); the top/bottom axis stays finite - no vertical wrap |
+| `torus` | opposite edges wrap around normally (donut) on both axes; accepts `wrap` as a deprecated alias |
+| `mobius` | left/right edges wrap joining left to right just like `cylinder`, but the row is flipped top-to-bottom on the way (Möbius strip); the top/bottom axis stays finite - no vertical wrap |
 | `klein` | left/right edges wrap with a flip like `mobius`, but top/bottom also wrap normally (Klein bottle) |
 | `projective` | both pairs of edges wrap, each flipping the other axis (real projective plane) |
 
@@ -97,7 +98,7 @@ PATTERN
 - `rule=` — life-like rule string, `B<digits>/S<digits>`.
 - `cell_size=` — pixel size of one cell in the window.
 - `speed_ms=` — milliseconds between generations.
-- `edge=` — `finite`, `torus`, `mobius`, `klein` or `projective` (see above).
+- `edge=` — `finite`, `cylinder`, `torus`, `mobius`, `klein` or `projective` (see above).
 - `PATTERN` — marks the start of the grid. Everything after it, to the end
   of the file, is the initial pattern: one line per row, `o` for an alive
   cell and `.` for dead — no other symbols are recognized. The grid's
