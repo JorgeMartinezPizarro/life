@@ -14,6 +14,7 @@
 
 void	cleanup_exit(t_game *game)
 {
+	thread_pool_destroy(game);
 	if (game->mlx.img)
 		mlx_destroy_image(game->mlx.mlx, game->mlx.img);
 	if (game->mlx.win)

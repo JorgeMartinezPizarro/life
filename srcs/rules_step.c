@@ -34,22 +34,15 @@ int	count_neighbors(t_grid *grid, int x, int y)
 	return (count);
 }
 
-static int	next_state(t_rule *rule, int alive, int neighbors)
+int	next_state(t_rule *rule, int alive, int neighbors)
 {
 	if (alive)
 		return (rule->survive[neighbors]);
 	return (rule->born[neighbors]);
 }
 
-static void	track_transition(t_game *game, int alive, int next)
-{
-	if (next && !alive)
-		game->pop_births++;
-	else if (!next && alive)
-		game->pop_deaths++;
-}
-
-static void	fill_next_grid(t_game *game)
+void	compute_rows(t_game *game, int y_start, int y_end,
+		int *births, int *deaths)
 {
 	t_grid	*grid;
 	int		x;
@@ -58,34 +51,23 @@ static void	fill_next_grid(t_game *game)
 	int		next;
 
 	grid = &game->grid;
-	y = 0;
-	while (y < grid->height)
+	*births = 0;
+	*deaths = 0;
+	y = y_start;
+	while (y < y_end)
 	{
 		x = 0;
 		while (x < grid->width)
 		{
 			alive = grid_get(grid, x, y);
 			next = next_state(&game->rule, alive, count_neighbors(grid, x, y));
-			track_transition(game, alive, next);
+			if (next && !alive)
+				(*births)++;
+			else if (!next && alive)
+				(*deaths)++;
 			grid->next[y * grid->width + x] = next;
 			x++;
 		}
 		y++;
 	}
-}
-
-void	step_grid(t_game *game)
-{
-	t_grid	*grid;
-	char	*tmp;
-
-	grid = &game->grid;
-	game->pop_births = 0;
-	game->pop_deaths = 0;
-	fill_next_grid(game);
-	tmp = grid->cells;
-	grid->cells = grid->next;
-	grid->next = tmp;
-	game->pop_total += game->pop_births - game->pop_deaths;
-	game->generation++;
 }

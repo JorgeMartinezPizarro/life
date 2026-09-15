@@ -18,11 +18,13 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/time.h>
+# include <pthread.h>
 
 # define DEFAULT_TITLE		"random life"
 # define DEFAULT_CELL_SIZE	12
 # define DEFAULT_SPEED_MS	150
 # define DEFAULT_EDGE		EDGE_TORUS
+# define THREAD_COUNT		4
 
 # define MAX_STR_LEN		1000000
 
@@ -80,11 +82,33 @@ typedef struct s_mlx
 	int		endian;
 }	t_mlx;
 
+typedef struct s_worker
+{
+	struct s_game	*game;
+	int				y_start;
+	int				y_end;
+	int				births;
+	int				deaths;
+}	t_worker;
+
+typedef struct s_pool
+{
+	pthread_t		tids[THREAD_COUNT];
+	t_worker		workers[THREAD_COUNT];
+	pthread_mutex_t	lock;
+	pthread_cond_t	work_cond;
+	pthread_cond_t	done_cond;
+	int				generation;
+	int				done_count;
+	int				stop;
+}	t_pool;
+
 typedef struct s_game
 {
 	t_grid	grid;
 	t_rule	rule;
 	t_mlx	mlx;
+	t_pool	pool;
 	char	*title;
 	int		cell_size;
 	int		speed_ms;
@@ -140,6 +164,13 @@ char	*edge_label(t_edge edge);
 
 /* rules_step.c */
 int		count_neighbors(t_grid *grid, int x, int y);
+int		next_state(t_rule *rule, int alive, int neighbors);
+void	compute_rows(t_game *game, int y_start, int y_end,
+			int *births, int *deaths);
+
+/* threads.c */
+void	thread_pool_init(t_game *game);
+void	thread_pool_destroy(t_game *game);
 void	step_grid(t_game *game);
 
 /* mlx_init.c */

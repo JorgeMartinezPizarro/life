@@ -1,7 +1,7 @@
 NAME		= life
 
 CC			= cc
-CFLAGS		= -Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror -pthread
 IFLAGS		= -Iincludes -Ilibft/includes -Iminilibx
 
 INC_DIR		= includes
@@ -28,13 +28,14 @@ SRCS		= main.c \
 			  render_fields.c \
 			  hooks_key.c \
 			  hooks_loop.c \
+			  threads.c \
 			  cleanup.c
 
 OBJS		= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 MLX_LIB		= $(MLX_DIR)/libmlx.a
 LIBFT_LIB	= $(LIBFT_DIR)/libft.a
-LIBS		= -L$(MLX_DIR) -lmlx -L$(LIBFT_DIR) -lft -lXext -lX11 -lbsd -lm
+LIBS		= -L$(MLX_DIR) -lmlx -L$(LIBFT_DIR) -lft -lXext -lX11 -lbsd -lm -pthread
 
 all: $(NAME)
 
