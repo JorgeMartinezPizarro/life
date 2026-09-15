@@ -15,3 +15,15 @@
    fun:mlx_new_window
    fun:create_window
 }
+
+{
+   signals_shutdown_flag_is_a_c11_atomic_helgrind_cant_see_read
+   Helgrind:Race
+   fun:shutdown_requested
+}
+
+{
+   signals_shutdown_flag_is_a_c11_atomic_helgrind_cant_see_write
+   Helgrind:Race
+   fun:request_shutdown
+}

@@ -12,6 +12,28 @@
 
 #include "life.h"
 
+static void	check_screen_fit(t_game *game)
+{
+	int	screen_w;
+	int	screen_h;
+	int	win_w;
+	int	win_h;
+
+	mlx_get_screen_size(game->mlx.mlx, &screen_w, &screen_h);
+	win_w = game->grid.width * game->cell_size;
+	win_h = game->grid.height * game->cell_size + STATUS_HEIGHT;
+	if (win_w > screen_w || win_h > screen_h)
+	{
+		thread_pool_destroy(game);
+		mlx_destroy_display(game->mlx.mlx);
+		free(game->mlx.mlx);
+		grid_free(&game->grid);
+		free(game->title);
+		error_exit("scenario does not fit the screen: lower --cell "
+			"or shrink the grid/pattern");
+	}
+}
+
 static void	create_window(t_game *game)
 {
 	int	win_w;
@@ -43,6 +65,7 @@ void	init_mlx(t_game *game)
 	game->mlx.mlx = mlx_init();
 	if (!game->mlx.mlx)
 		error_exit("mlx_init failed");
+	check_screen_fit(game);
 	create_window(game);
 	create_image(game);
 }

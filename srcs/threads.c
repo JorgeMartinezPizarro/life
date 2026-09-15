@@ -6,7 +6,7 @@
 /*   By: jomarti3 <jomarti3@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 19:52:14 by jomarti3          #+#    #+#             */
-/*   Updated: 2026/09/15 19:52:21 by jomarti3         ###   ########.fr       */
+/*   Updated: 2026/09/15 20:40:01 by jomarti3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	*worker_main(void *arg)
 			break ;
 		seen_gen = pool->generation;
 		pthread_mutex_unlock(&pool->lock);
-		compute_rows(w->game, w->y_start, w->y_end, &w->births, &w->deaths);
+		compute_rows(w);
 		pthread_mutex_lock(&pool->lock);
 		pool->done_count++;
 		if (pool->done_count == THREAD_COUNT)
@@ -101,62 +101,4 @@ void	thread_pool_destroy(t_game *game)
 	pthread_mutex_destroy(&pool->lock);
 	pthread_cond_destroy(&pool->work_cond);
 	pthread_cond_destroy(&pool->done_cond);
-}
-
-static void	dispatch_step(t_pool *pool)
-{
-	pthread_mutex_lock(&pool->lock);
-	pool->done_count = 0;
-	pool->generation++;
-	pthread_cond_broadcast(&pool->work_cond);
-	while (pool->done_count != THREAD_COUNT)
-		pthread_cond_wait(&pool->done_cond, &pool->lock);
-	pthread_mutex_unlock(&pool->lock);
-}
-
-static void	reduce_counts(t_game *game)
-{
-	int	i;
-
-	game->pop_births = 0;
-	game->pop_deaths = 0;
-	i = 0;
-	while (i < THREAD_COUNT)
-	{
-		game->pop_births += game->pool.workers[i].births;
-		game->pop_deaths += game->pool.workers[i].deaths;
-		i++;
-	}
-}
-
-static void	print_step_time(t_game *game, long us)
-{
-	ft_putstr_fd("gen ", 1);
-	ft_putnbr_fd(game->generation, 1);
-	ft_putstr_fd(": step time ", 1);
-	ft_putnbr_fd((int)us, 1);
-	ft_putstr_fd(" us (", 1);
-	ft_putnbr_fd(THREAD_COUNT, 1);
-	ft_putendl_fd(" threads)", 1);
-}
-
-void	step_grid(t_game *game)
-{
-	t_grid			*grid;
-	char			*tmp;
-	struct timeval	start;
-	struct timeval	end;
-
-	gettimeofday(&start, NULL);
-	dispatch_step(&game->pool);
-	reduce_counts(game);
-	grid = &game->grid;
-	tmp = grid->cells;
-	grid->cells = grid->next;
-	grid->next = tmp;
-	game->pop_total += game->pop_births - game->pop_deaths;
-	game->generation++;
-	gettimeofday(&end, NULL);
-	print_step_time(game, (end.tv_sec - start.tv_sec) * 1000000L
-		+ (end.tv_usec - start.tv_usec));
 }

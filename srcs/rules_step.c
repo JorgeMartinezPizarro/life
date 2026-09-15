@@ -41,33 +41,38 @@ int	next_state(t_rule *rule, int alive, int neighbors)
 	return (rule->born[neighbors]);
 }
 
-void	compute_rows(t_game *game, int y_start, int y_end,
-		int *births, int *deaths)
+static void	compute_row(t_game *game, int y, int *births, int *deaths)
 {
 	t_grid	*grid;
 	int		x;
-	int		y;
 	int		alive;
 	int		next;
 
 	grid = &game->grid;
-	*births = 0;
-	*deaths = 0;
-	y = y_start;
-	while (y < y_end)
+	x = 0;
+	while (x < grid->width)
 	{
-		x = 0;
-		while (x < grid->width)
-		{
-			alive = grid_get(grid, x, y);
-			next = next_state(&game->rule, alive, count_neighbors(grid, x, y));
-			if (next && !alive)
-				(*births)++;
-			else if (!next && alive)
-				(*deaths)++;
-			grid->next[y * grid->width + x] = next;
-			x++;
-		}
+		alive = grid_get(grid, x, y);
+		next = next_state(&game->rule, alive, count_neighbors(grid, x, y));
+		if (next && !alive)
+			(*births)++;
+		else if (!next && alive)
+			(*deaths)++;
+		grid->next[y * grid->width + x] = next;
+		x++;
+	}
+}
+
+void	compute_rows(t_worker *w)
+{
+	int	y;
+
+	w->births = 0;
+	w->deaths = 0;
+	y = w->y_start;
+	while (y < w->y_end)
+	{
+		compute_row(w->game, y, &w->births, &w->deaths);
 		y++;
 	}
 }

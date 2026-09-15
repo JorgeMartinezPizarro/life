@@ -37,6 +37,7 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		usage_exit();
 	init_defaults(&game);
+	setup_signal_handlers();
 	parse_args(&game, argc, argv);
 	if (!game.grid.cells)
 		error_exit("no initial grid: provide a config file or --random");

@@ -38,18 +38,23 @@ static char	*derive_title(char *path)
 
 static void	apply_flag(t_game *game, char *arg)
 {
+	char	*msg;
+
+	msg = NULL;
 	if (!ft_strncmp(arg, "--rule=", 7))
-		parse_rule(&game->rule, arg + 7);
+		msg = parse_rule(&game->rule, arg + 7);
 	else if (!ft_strncmp(arg, "--random=", 9))
-		parse_random(game, arg + 9);
+		msg = parse_random(game, arg + 9);
 	else if (!ft_strncmp(arg, "--speed=", 8))
 		game->speed_ms = ft_atoi(arg + 8);
 	else if (!ft_strncmp(arg, "--cell=", 7))
 		game->cell_size = ft_atoi(arg + 7);
 	else if (!ft_strncmp(arg, "--edge=", 7))
-		apply_edge(game, arg + 7);
+		msg = apply_edge(game, arg + 7);
 	else
 		usage_exit();
+	if (msg)
+		error_exit(msg);
 }
 
 void	parse_args(t_game *game, int argc, char **argv)

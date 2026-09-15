@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <pthread.h>
+# include <signal.h>
 
 # define DEFAULT_TITLE		"random life"
 # define DEFAULT_CELL_SIZE	12
@@ -126,7 +127,6 @@ int		main(int argc, char **argv);
 /* error.c */
 void	error_exit(char *msg);
 void	usage_exit(void);
-int		safe_len(size_t n);
 
 /* parse_args.c */
 void	parse_args(t_game *game, int argc, char **argv);
@@ -135,17 +135,17 @@ void	parse_args(t_game *game, int argc, char **argv);
 void	parse_config(t_game *game, char *path);
 
 /* parse_config_keys.c */
-void	apply_config_key(t_game *game, char *line);
-void	apply_edge(t_game *game, char *value);
+char	*apply_config_key(t_game *game, char *line);
+char	*apply_edge(t_game *game, char *value);
 
 /* parse_pattern.c */
-void	parse_pattern(t_game *game, char **lines, int start);
+char	*parse_pattern(t_game *game, char **lines, int start);
 
 /* parse_rule.c */
-void	parse_rule(t_rule *rule, char *str);
+char	*parse_rule(t_rule *rule, char *str);
 
 /* parse_random.c */
-void	parse_random(t_game *game, char *value);
+char	*parse_random(t_game *game, char *value);
 
 /* grid_alloc.c */
 void	grid_alloc(t_grid *grid, int width, int height);
@@ -165,12 +165,13 @@ char	*edge_label(t_edge edge);
 /* rules_step.c */
 int		count_neighbors(t_grid *grid, int x, int y);
 int		next_state(t_rule *rule, int alive, int neighbors);
-void	compute_rows(t_game *game, int y_start, int y_end,
-			int *births, int *deaths);
+void	compute_rows(t_worker *w);
 
 /* threads.c */
 void	thread_pool_init(t_game *game);
 void	thread_pool_destroy(t_game *game);
+
+/* step.c */
 void	step_grid(t_game *game);
 
 /* mlx_init.c */
@@ -198,5 +199,9 @@ int		close_hook(t_game *game);
 
 /* cleanup.c */
 void	cleanup_exit(t_game *game);
+
+/* signals.c */
+void	setup_signal_handlers(void);
+int		shutdown_requested(void);
 
 #endif

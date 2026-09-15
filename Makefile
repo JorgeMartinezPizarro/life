@@ -29,6 +29,8 @@ SRCS		= main.c \
 			  hooks_key.c \
 			  hooks_loop.c \
 			  threads.c \
+			  step.c \
+			  signals.c \
 			  cleanup.c
 
 OBJS		= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
@@ -77,4 +79,4 @@ test:
 
 re: fclean all
 
-.PHONY: all clean fclean re debug debug-tsan
+.PHONY: all clean fclean re debug debug-tsan test

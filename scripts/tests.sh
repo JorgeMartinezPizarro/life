@@ -7,45 +7,108 @@
 #   - TSan/UBSan  (make debug-tsan, ./life_tsan)  -- data races
 #   - valgrind    (make/make re,    ./life)       -- memcheck + helgrind
 #
-# ASan/TSan overhead is low (~2-5x), so those passes also cover the
-# big, performance-relevant grids. Valgrind's overhead (20-50x, more
-# under helgrind) makes those grids impractical to fully exercise, so
-# its pass sticks to small/moderate grids by default.
+# Default is a small curated set of configs (+ a couple of --random=
+# CLI cases), tuned to land around 2-3 minutes total -- fast enough to
+# run routinely. Pass --all-configs to instead sweep every
+# configs/*.cfg (skipping any too big for the screen, see
+# fits_test_limit below); that's thorough but can take ~40+ minutes at
+# full duration, so it's opt-in, not what `make test` runs.
 #
-# Usage: scripts/stress_test.sh [--all-configs]
-#   ASAN_SECS=5 TSAN_SECS=8 VALGRIND_SECS=30 scripts/stress_test.sh
+# Usage: scripts/tests.sh [--all-configs]   (or: make test)
+#   ASAN_SECS=4 TSAN_SECS=5 VALGRIND_SECS=15 scripts/tests.sh
+#
+# The program now catches SIGINT/SIGTERM (srcs/signals.c) and runs its
+# normal cleanup_exit() on the next loop tick instead of dying raw, so
+# the `timeout` kill below ends every run the same way ESC would --
+# leak reports for the long-running valid-config passes are therefore
+# meaningful, not an artifact of being killed mid-flight.
 #
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-ASAN_SECS="${ASAN_SECS:-5}"
-TSAN_SECS="${TSAN_SECS:-8}"
-VALGRIND_SECS="${VALGRIND_SECS:-30}"
+ASAN_SECS="${ASAN_SECS:-4}"
+TSAN_SECS="${TSAN_SECS:-5}"
+VALGRIND_SECS="${VALGRIND_SECS:-15}"
 TS="$(date +%Y%m%d_%H%M%S)"
 OUT="$ROOT/test_logs/$TS"
 mkdir -p "$OUT"
 
-# ASan pass: cheap enough to include the large, perf-relevant grids.
+# The window mlx opens is grid-cells x cell_size, not grid-cells alone
+# (--cell defaults to 12, includes/life.h DEFAULT_CELL_SIZE) -- an
+# earlier version of this script forgot the multiplication and asked
+# for a 1900x1000-cell grid with no --cell override, i.e. a
+# 22800x12000px window, which froze/glitched the display. The game
+# itself now also guards this (srcs/init_mlx.c check_screen_fit(),
+# checked against mlx_get_screen_size()); this ceiling just keeps the
+# test cases themselves small and fast, generous enough to leave
+# existing configs/*.cfg (already authored to fit a real screen)
+# untouched.
+MAX_WIN_W=1920
+MAX_WIN_H=1080
+
+# Skips a config whose PATTERN block (or random= line, for configs
+# that generate their grid instead of drawing it) at its own
+# cell_size= (default 12) would open a window bigger than
+# MAX_WIN_W x MAX_WIN_H, so the sweep below can't pick one up by
+# accident as configs/ grows.
+fits_test_limit() {
+	awk -v maxw="$MAX_WIN_W" -v maxh="$MAX_WIN_H" '
+		BEGIN { in_pat = 0; h = 0; w = 0; cell = 12; rw = 0; rh = 0 }
+		/^cell_size=/ { cell = $0; sub(/^cell_size=/, "", cell) }
+		/^random=/ {
+			spec = $0
+			sub(/^random=/, "", spec)
+			split(spec, dims, "x")
+			rw = dims[1] + 0
+			split(dims[2], hp, ":")
+			rh = hp[1] + 0
+		}
+		/^PATTERN$/ { in_pat = 1; next }
+		# libft'\''s ft_split() collapses consecutive delimiters, so a
+		# blank line after PATTERN never becomes an empty entry in
+		# lines[] -- it'\''s silently skipped, not a stop signal, and
+		# the real parser (srcs/parse_pattern.c pattern_height())
+		# just keeps counting past it to end of file. Skip it here
+		# too instead of stopping, to measure what the game actually
+		# would.
+		in_pat && $0 == "" { next }
+		in_pat { h++; if (length($0) > w) w = length($0) }
+		END {
+			if (!in_pat) { w = rw; h = rh }
+			if (w * cell > maxw || h * cell + 20 > maxh) exit 1
+			exit 0
+		}
+	' "$1"
+}
+
+# --cell=2 on the synthetic cases keeps their window small (well under
+# MAX_WIN_W x MAX_WIN_H) while still exercising real cell counts
+# across the thread pool.
 ASAN_CASES=(
 	"configs/glider.cfg"
 	"configs/fullscreen_conway.cfg"
-	"--random=1900x1000:30"
+	"--random=300x200:30 --cell=2"
 )
-if [ "${1:-}" = "--all-configs" ]; then
-	ASAN_CASES=()
-	while IFS= read -r f; do
-		ASAN_CASES+=("$f")
-	done < <(find configs -name '*.cfg' | sort)
-	ASAN_CASES+=("--random=1900x1000:30")
-fi
-
-# Valgrind pass: small/moderate grids only -- see the overhead note above.
 VALGRIND_CASES=(
 	"configs/glider.cfg"
-	"--random=300x200:30"
+	"--random=150x100:30 --cell=2"
 )
+
+if [ "${1:-}" = "--all-configs" ]; then
+	CONFIG_CASES=()
+	while IFS= read -r f; do
+		if fits_test_limit "$f"; then
+			CONFIG_CASES+=("$f")
+		else
+			echo "  [skip] $f exceeds ${MAX_WIN_W}x${MAX_WIN_H}px, skipping (mlx window-size freeze risk)"
+		fi
+	done < <(find configs -name '*.cfg' | sort)
+	CONFIG_CASES+=("--random=300x200:30 --cell=2")
+	ASAN_CASES=("${CONFIG_CASES[@]}")
+	VALGRIND_CASES=("${CONFIG_CASES[@]}")
+fi
 
 INVALID_CASES=(
 	"scripts/bad_configs/bad_rule.cfg"
@@ -53,13 +116,19 @@ INVALID_CASES=(
 	"scripts/bad_configs/bad_pattern_ragged.cfg"
 	"scripts/bad_configs/bad_pattern_empty.cfg"
 	"scripts/bad_configs/bad_pattern_invalid.cfg"
+	# exercises check_screen_fit() in srcs/init_mlx.c: a 10x10 grid at
+	# --cell=500 asks for a 5000x5020px window, past any real screen,
+	# and unlike the fixtures above this fails after mlx_init() has
+	# already opened a display connection, so it's also the only
+	# invalid case that touches the mlx.mlx cleanup path.
+	"--random=10x10:30 --cell=500"
 )
 
 FAILURES=0
 INCONCLUSIVE=0
 
-echo "== building release (make re) =="
-make re >"$OUT/build_release.log" 2>&1 \
+echo "== building release (make) =="
+make >"$OUT/build_release.log" 2>&1 \
 	|| { echo "release build failed, see $OUT/build_release.log"; exit 1; }
 
 echo "== building sanitizer debug (make debug) =="
@@ -77,7 +146,7 @@ run_asan() {
 	local args="$1" secs="$2" log="$3"
 	ASAN_OPTIONS="detect_leaks=1:halt_on_error=1:abort_on_error=1" \
 	UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1" \
-	timeout -k 2 "$secs" ./life_debug $args >"$log" 2>&1
+	timeout --preserve-status -k 2 "$secs" ./life_debug $args >"$log" 2>&1
 	echo $?
 }
 
@@ -91,7 +160,7 @@ run_tsan() {
 	local args="$1" secs="$2" log="$3"
 	TSAN_OPTIONS="halt_on_error=1" \
 	UBSAN_OPTIONS="print_stacktrace=1:halt_on_error=1" \
-	timeout -k 2 "$secs" setarch "$(uname -m)" -R ./life_tsan $args >"$log" 2>&1
+	timeout --preserve-status -k 2 "$secs" setarch "$(uname -m)" -R ./life_tsan $args >"$log" 2>&1
 	echo $?
 }
 
@@ -105,7 +174,7 @@ run_valgrind() {
 	else
 		extra=(--tool=helgrind)
 	fi
-	timeout -k 5 "$secs" valgrind "${extra[@]}" --error-exitcode=97 \
+	timeout --preserve-status -k 5 "$secs" valgrind "${extra[@]}" --error-exitcode=97 \
 		--suppressions="$ROOT/scripts/valgrind.supp" \
 		-- ./life $args >"$log" 2>&1
 	echo $?
@@ -160,7 +229,7 @@ for args in "${ASAN_CASES[@]}"; do
 		report "$args (asan, exit=$code)" fail "sanitizer flagged an issue, see $log"
 	else
 		note="ran $ASAN_SECS s"
-		[ "$code" = 124 ] && note="killed by timeout after ${ASAN_SECS}s, expected"
+		[ "$code" = 0 ] && note="ran ${ASAN_SECS}s then shut down cleanly on SIGTERM, expected"
 		report "$args (asan, exit=$code, $note)" ok
 	fi
 done
@@ -175,7 +244,7 @@ for args in "${ASAN_CASES[@]}"; do
 		report "$args (tsan, exit=$code)" fail "data race flagged, see $log"
 	else
 		note="ran $TSAN_SECS s"
-		[ "$code" = 124 ] && note="killed by timeout after ${TSAN_SECS}s, expected"
+		[ "$code" = 0 ] && note="ran ${TSAN_SECS}s then shut down cleanly on SIGTERM, expected"
 		report "$args (tsan, exit=$code, $note)" ok
 	fi
 done

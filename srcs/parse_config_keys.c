@@ -12,17 +12,18 @@
 
 #include "life.h"
 
-static char	*value_after_eq(char *line)
+static char	*value_after_eq(char *line, char **value)
 {
 	char	*eq;
 
 	eq = ft_strchr(line, '=');
 	if (!eq)
-		error_exit("invalid config line, expected key=value");
-	return (eq + 1);
+		return ("invalid config line, expected key=value");
+	*value = eq + 1;
+	return (NULL);
 }
 
-void	apply_edge(t_game *game, char *value)
+char	*apply_edge(t_game *game, char *value)
 {
 	if (!ft_strcmp(value, "finite"))
 		game->grid.edge = EDGE_FINITE;
@@ -37,27 +38,32 @@ void	apply_edge(t_game *game, char *value)
 	else if (!ft_strcmp(value, "projective"))
 		game->grid.edge = EDGE_PROJECTIVE;
 	else
-		error_exit("invalid edge value: finite|cylinder|torus|mobius|klein"
+		return ("invalid edge value: finite|cylinder|torus|mobius|klein"
 			"|projective");
+	return (NULL);
 }
 
-void	apply_config_key(t_game *game, char *line)
+char	*apply_config_key(t_game *game, char *line)
 {
 	char	*value;
+	char	*msg;
 
-	value = value_after_eq(line);
+	msg = value_after_eq(line, &value);
+	if (msg)
+		return (msg);
 	if (!ft_strncmp(line, "rule=", 5))
-		parse_rule(&game->rule, value);
+		return (parse_rule(&game->rule, value));
 	else if (!ft_strncmp(line, "cell_size=", 10))
 		game->cell_size = ft_atoi(value);
 	else if (!ft_strncmp(line, "speed_ms=", 9))
 		game->speed_ms = ft_atoi(value);
 	else if (!ft_strncmp(line, "edge=", 5))
-		apply_edge(game, value);
+		return (apply_edge(game, value));
 	else if (!ft_strncmp(line, "random=", 7) && !game->grid.cells)
-		parse_random(game, value);
+		return (parse_random(game, value));
 	else if (!ft_strncmp(line, "random=", 7))
-		error_exit("config file: random= given after grid already set");
+		return ("config file: random= given after grid already set");
 	else
-		error_exit("unknown config key");
+		return ("unknown config key");
+	return (NULL);
 }

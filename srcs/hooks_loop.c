@@ -24,6 +24,8 @@ int	loop_hook(t_game *game)
 {
 	long	now;
 
+	if (shutdown_requested())
+		cleanup_exit(game);
 	now = current_time_us();
 	if (!game->paused && now - game->last_step_us >= game->speed_ms * 1000L)
 	{

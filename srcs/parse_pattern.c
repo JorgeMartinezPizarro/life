@@ -19,7 +19,9 @@ static int	pattern_height(char **lines, int start)
 	h = 0;
 	while (lines[start + h] && lines[start + h][0] != '\0')
 		h++;
-	return (safe_len(h));
+	if (h > MAX_STR_LEN)
+		return (-1);
+	return ((int)h);
 }
 
 static int	pattern_width(char **lines, int start, int height)
@@ -34,11 +36,12 @@ static int	pattern_width(char **lines, int start, int height)
 	{
 		len = ft_strlen(lines[start + i]);
 		if (len != first_len)
-			error_exit("pattern is not rectangular: all rows must have "
-				"the same length");
+			return (-1);
 		i++;
 	}
-	return (safe_len(first_len));
+	if (first_len > MAX_STR_LEN)
+		return (-2);
+	return ((int)first_len);
 }
 
 static void	fill_row(t_grid *grid, int row, char *line)
@@ -54,20 +57,36 @@ static void	fill_row(t_grid *grid, int row, char *line)
 	}
 }
 
-void	parse_pattern(t_game *game, char **lines, int start)
+static char	*validate_pattern(char **lines, int start, int *height, int *width)
 {
-	int	height;
-	int	width;
-	int	y;
+	*height = pattern_height(lines, start);
+	if (*height == -1)
+		return ("value too large: exceeds MAX_STR_LEN");
+	if (*height == 0)
+		return ("empty pattern in config file");
+	*width = pattern_width(lines, start, *height);
+	if (*width == -1)
+		return ("pattern is not rectangular: all rows must have "
+			"the same length");
+	if (*width == -2)
+		return ("value too large: exceeds MAX_STR_LEN");
+	if (*width == 0)
+		return ("empty pattern in config file");
+	if (*width > MAX_GRID_WIDTH || *height > MAX_GRID_HEIGHT)
+		return ("pattern dimensions exceed maximum allowed size");
+	return (NULL);
+}
 
-	height = pattern_height(lines, start);
-	if (height == 0)
-		error_exit("empty pattern in config file");
-	width = pattern_width(lines, start, height);
-	if (width == 0)
-		error_exit("empty pattern in config file");
-	if (width > MAX_GRID_WIDTH || height > MAX_GRID_HEIGHT)
-		error_exit("pattern dimensions exceed maximum allowed size");
+char	*parse_pattern(t_game *game, char **lines, int start)
+{
+	int		height;
+	int		width;
+	int		y;
+	char	*msg;
+
+	msg = validate_pattern(lines, start, &height, &width);
+	if (msg)
+		return (msg);
 	grid_alloc(&game->grid, width, height);
 	y = 0;
 	while (y < height)
@@ -75,4 +94,5 @@ void	parse_pattern(t_game *game, char **lines, int start)
 		fill_row(&game->grid, y, lines[start + y]);
 		y++;
 	}
+	return (NULL);
 }
