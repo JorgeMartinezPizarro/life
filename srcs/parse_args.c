@@ -52,9 +52,15 @@ static void	apply_flag(t_game *game, char *arg)
 	else if (!ft_strncmp(arg, "--edge=", 7))
 		msg = apply_edge(game, arg + 7);
 	else
+	{
+		free(game->title);
 		usage_exit();
+	}
 	if (msg)
+	{
+		free(game->title);
 		error_exit(msg);
+	}
 }
 
 void	parse_args(t_game *game, int argc, char **argv)
@@ -73,7 +79,11 @@ void	parse_args(t_game *game, int argc, char **argv)
 			parse_config(game, argv[i]);
 		}
 		else
+		{
+			grid_free(&game->grid);
+			free(game->title);
 			usage_exit();
+		}
 		i++;
 	}
 }

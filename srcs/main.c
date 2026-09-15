@@ -40,7 +40,10 @@ int	main(int argc, char **argv)
 	setup_signal_handlers();
 	parse_args(&game, argc, argv);
 	if (!game.grid.cells)
+	{
+		free(game.title);
 		error_exit("no initial grid: provide a config file or --random");
+	}
 	grid_save_initial(&game.grid);
 	game.pop_total = grid_count_alive(&game.grid);
 	thread_pool_init(&game);

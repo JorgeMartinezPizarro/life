@@ -59,9 +59,10 @@ static char	*find_pattern_start(t_game *game, char **lines, int *start)
 	return (NULL);
 }
 
-static void	fail(char **lines, char *msg)
+static void	fail(t_game *game, char **lines, char *msg)
 {
 	ft_free_split(lines);
+	free(game->title);
 	error_exit(msg);
 }
 
@@ -88,16 +89,22 @@ void	parse_config(t_game *game, char *path)
 
 	content = ft_read_file(path);
 	if (!content)
+	{
+		free(game->title);
 		error_exit("cannot read config file");
+	}
 	lines = ft_split(content, '\n');
 	free(content);
 	if (!lines)
+	{
+		free(game->title);
 		error_exit("invalid config file");
+	}
 	strip_cr_all(lines);
 	msg = find_pattern_start(game, lines, &start);
 	if (!msg)
 		msg = resolve_source(game, lines, start);
 	if (msg)
-		fail(lines, msg);
+		fail(game, lines, msg);
 	ft_free_split(lines);
 }
