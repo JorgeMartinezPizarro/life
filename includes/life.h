@@ -149,6 +149,12 @@ void	init_mlx(t_game *game);
 void	put_pixel_img(t_mlx *mlx, int x, int y, int color);
 void	render_grid(t_game *game);
 
+/* render_fields.c */
+char	*num_field(char *label, int value);
+char	*str_field(char *label, char *value);
+char	*append(char *acc, char *piece);
+char	*rule_label(t_rule *rule);
+
 /* render_status.c */
 void	render_status(t_game *game);
 

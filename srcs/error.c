@@ -28,15 +28,18 @@ int	safe_len(size_t n)
 
 void	usage_exit(void)
 {
-	ft_putendl_fd("usage: ./life <config_file> [options]", 2);
+	ft_putendl_fd("", 2);
+	ft_putendl_fd(" usage: ./life <config_file> [options]", 2);
 	ft_putendl_fd("   or: ./life --random=WxH:PERCENT [options]", 2);
-	ft_putendl_fd("options:", 2);
+	ft_putendl_fd("", 2);
+	ft_putendl_fd(" options:", 2);
 	ft_putendl_fd("  --rule=Bxxx/Sxxx    life-like rule, e.g. B3/S23", 2);
 	ft_putendl_fd("  --random=WxH:PCT    random grid, PCT chance alive", 2);
 	ft_putendl_fd("  --speed=ms          generation interval in ms", 2);
 	ft_putendl_fd("  --cell=px           pixel size of one cell", 2);
-	ft_putendl_fd("  --edge=MODE  finite|cylinder|torus|mobius|klein", 2);
-	ft_putendl_fd("               |projective", 2);
-	ft_putendl_fd("keys: ESC quit | SPACE pause | N step | R reset", 2);
+	ft_putendl_fd("  --edge=MODE  finite|cylinder|torus|mobius|klein|projective", 2);
+	ft_putendl_fd("", 2);
+	ft_putendl_fd(" keys: ESC quit | SPACE pause | N step | R reset", 2);
+	ft_putendl_fd("", 2);
 	exit(1);
 }

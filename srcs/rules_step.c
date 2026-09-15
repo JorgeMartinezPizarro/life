@@ -49,18 +49,15 @@ static void	track_transition(t_game *game, int alive, int next)
 		game->pop_deaths++;
 }
 
-void	step_grid(t_game *game)
+static void	fill_next_grid(t_game *game)
 {
 	t_grid	*grid;
-	char	*tmp;
 	int		x;
 	int		y;
 	int		alive;
 	int		next;
 
 	grid = &game->grid;
-	game->pop_births = 0;
-	game->pop_deaths = 0;
 	y = 0;
 	while (y < grid->height)
 	{
@@ -75,6 +72,17 @@ void	step_grid(t_game *game)
 		}
 		y++;
 	}
+}
+
+void	step_grid(t_game *game)
+{
+	t_grid	*grid;
+	char	*tmp;
+
+	grid = &game->grid;
+	game->pop_births = 0;
+	game->pop_deaths = 0;
+	fill_next_grid(game);
 	tmp = grid->cells;
 	grid->cells = grid->next;
 	grid->next = tmp;

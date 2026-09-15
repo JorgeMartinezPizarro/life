@@ -25,6 +25,7 @@ SRCS		= main.c \
 			  init_mlx.c \
 			  render.c \
 			  render_status.c \
+			  render_fields.c \
 			  hooks_key.c \
 			  hooks_loop.c \
 			  cleanup.c

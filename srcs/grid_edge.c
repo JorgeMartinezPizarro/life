@@ -17,11 +17,12 @@ static int	wrap_coord(int v, int max)
 	return (((v % max) + max) % max);
 }
 
-static void	apply_flip(t_grid *grid, int *cx, int *cy, int x_out, int y_out)
+static void	apply_flip(t_grid *grid, int *cx, int *cy, int out_flags)
 {
-	if (grid->edge != EDGE_TORUS && grid->edge != EDGE_CYLINDER && x_out)
+	if (grid->edge != EDGE_TORUS && grid->edge != EDGE_CYLINDER
+		&& (out_flags & 1))
 		*cy = grid->height - 1 - *cy;
-	if (grid->edge == EDGE_PROJECTIVE && y_out)
+	if (grid->edge == EDGE_PROJECTIVE && (out_flags & 2))
 		*cx = grid->width - 1 - *cx;
 }
 
@@ -38,7 +39,7 @@ int	edge_wrap_get(t_grid *grid, int x, int y)
 		return (0);
 	cx = wrap_coord(x, grid->width);
 	cy = wrap_coord(y, grid->height);
-	apply_flip(grid, &cx, &cy, x_out, y_out);
+	apply_flip(grid, &cx, &cy, x_out | (y_out << 1));
 	return (grid->cells[cy * grid->width + cx]);
 }
 

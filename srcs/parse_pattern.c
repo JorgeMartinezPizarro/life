@@ -34,7 +34,8 @@ static int	pattern_width(char **lines, int start, int height)
 	{
 		len = ft_strlen(lines[start + i]);
 		if (len != first_len)
-			error_exit("pattern is not rectangular: all rows must have the same length");
+			error_exit("pattern is not rectangular: all rows must have "
+				"the same length");
 		i++;
 	}
 	return (safe_len(first_len));
@@ -45,7 +46,7 @@ static void	fill_row(t_grid *grid, int row, char *line)
 	int	x;
 
 	x = 0;
-	while (x < grid->width && line[x] != '\0')	// fill the row with the pattern
+	while (x < grid->width && line[x] != '\0')
 	{
 		if (line[x] == 'o')
 			grid_set(grid, x, row, 1);
