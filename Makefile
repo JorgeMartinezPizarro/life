@@ -32,7 +32,7 @@ SRCS		= main.c \
 			  cleanup.c
 
 OBJS		= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
-
+HFILES		= $(INC_DIR)/life.h
 MLX_LIB		= $(MLX_DIR)/libmlx.a
 LIBFT_LIB	= $(LIBFT_DIR)/libft.a
 LIBS		= -L$(MLX_DIR) -lmlx -L$(LIBFT_DIR) -lft -lXext -lX11 -lbsd -lm -pthread
@@ -45,7 +45,7 @@ $(MLX_LIB):
 $(LIBFT_LIB):
 	$(MAKE) -C $(LIBFT_DIR)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INC_DIR)/life.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HFILES)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
@@ -61,10 +61,20 @@ debug: $(MLX_LIB) $(LIBFT_LIB)
 	$(CC) $(CFLAGS) $(IFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer \
 		$(addprefix srcs/, $(SRCS)) $(LIBS) -o $(NAME)_debug
 
+# ASan and ThreadSanitizer can't be linked into the same binary, hence
+# a separate target: this one catches data races (e.g. in the thread
+# pool) that ASan/UBSan don't look for at all.
+debug-tsan: $(MLX_LIB) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(IFLAGS) -g -fsanitize=thread,undefined -fno-omit-frame-pointer \
+		$(addprefix srcs/, $(SRCS)) $(LIBS) -o $(NAME)_tsan
+
 fclean: clean
-	rm -f $(NAME) $(NAME)_debug
+	rm -f $(NAME) $(NAME)_debug $(NAME)_tsan
 	$(MAKE) -C $(LIBFT_DIR) fclean
+
+test:
+	@./scripts/tests.sh
 
 re: fclean all
 
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re debug debug-tsan

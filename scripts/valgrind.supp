@@ -1,0 +1,17 @@
+{
+   minilibx_mlx_new_window_uninitialised_xsizehints
+   Memcheck:Param
+   writev(vector[0])
+   fun:__syscall_cancel_arch
+   fun:__internal_syscall_cancel
+   fun:__syscall_cancel
+   fun:writev
+   obj:/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0
+   fun:xcb_writev
+   fun:_XSend
+   fun:_XReadEvents
+   fun:XWindowEvent
+   fun:mlx_int_wait_first_expose
+   fun:mlx_new_window
+   fun:create_window
+}
